@@ -44,98 +44,99 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const qrReader = new Html5Qrcode("qr-reader");
-            const scanBtn = document.getElementById("scan-btn");
-            const statusElement = document.getElementById("status");
-            const qrReaderContainer = document.getElementById("qr-reader");
-            const playerContainer = document.getElementById("player-container");
-            const audioPlayer = document.getElementById("audio-player");
-    
-            let isScanning = false;
-    
-            const resetAudioPlayer = () => {
-                audioPlayer.pause();
-                audioPlayer.currentTime = 0;
-                audioPlayer.src = "";
-                playerContainer.style.display = "none";
-            };
-    
-            const resetScanner = async () => {
-                if (isScanning) {
-                    try {
-                        await qrReader.stop();
-                    } catch (err) {
-                        console.error("QR olvasó leállítási hiba:", err);
-                    }
-                    qrReaderContainer.style.display = "none";
-                    isScanning = false;
-                    scanBtn.textContent = "Beolvasás";
-                    statusElement.textContent = "";
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const qrReader = new Html5Qrcode("qr-reader");
+        const scanBtn = document.getElementById("scan-btn");
+        const statusElement = document.getElementById("status");
+        const qrReaderContainer = document.getElementById("qr-reader");
+        const playerContainer = document.getElementById("player-container");
+        const audioPlayer = document.getElementById("audio-player");
+
+        let isScanning = false;
+
+        const resetAudioPlayer = () => {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            audioPlayer.src = "";
+            playerContainer.style.display = "none";
+        };
+
+        const resetScanner = async () => {
+            if (isScanning) {
+                try {
+                    await qrReader.stop();
+                } catch (err) {
+                    console.error("QR olvasó leállítási hiba:", err);
                 }
-            };
-    
-            const onScanSuccess = async (decodedText) => {
-                console.log("Beolvasott QR-kód:", decodedText);
-    
-                // Ellenőrizzük, hogy "zene1", "zene2", stb. formátumú-e
-                const match = decodedText.match(/^zene(\d+)$/);
-                if (match) {
-                    const zeneIndex = match[1];
-                    const audioFileName = `zene (${zeneIndex}).mp3`;
-    
-                    resetAudioPlayer();
-    
-                    audioPlayer.src = audioFileName;
-                    try {
-                        await audioPlayer.play();
-                        statusElement.textContent = `Most játszik: ${audioFileName}`;
-                        playerContainer.style.display = "block";
-                    } catch (err) {
-                        console.error("Hiba a hangfájl lejátszása közben:", err);
-                        statusElement.textContent = "Nem sikerült a hangfájlt lejátszani.";
-                    }
-                } else {
-                    statusElement.textContent = "Érvénytelen QR-kód tartalom.";
+                qrReaderContainer.style.display = "none";
+                isScanning = false;
+                scanBtn.textContent = "Beolvasás";
+                statusElement.textContent = "";
+            }
+        };
+
+        const onScanSuccess = async (decodedText) => {
+            console.log("Beolvasott QR-kód:", decodedText);
+
+            // Ellenőrizzük, hogy "zene1", "zene2", stb. formátumú-e
+            const match = decodedText.match(/^zene(\d+)$/);
+            if (match) {
+                const zeneIndex = match[1];
+                const audioFileName = `https://baloghdaniel654.github.io/hitster/zene%20(${zeneIndex}).mp3`;
+
+                resetAudioPlayer();
+
+                audioPlayer.src = audioFileName;
+                try {
+                    await audioPlayer.play();
+                    statusElement.textContent = `Most játszik: zene (${zeneIndex}).mp3`;
+                    playerContainer.style.display = "block";
+                } catch (err) {
+                    console.error("Hiba a hangfájl lejátszása közben:", err);
+                    statusElement.textContent = "Nem sikerült a hangfájlt lejátszani.";
                 }
-    
-                // Leállítjuk az olvasót az új beolvasások előtt
+            } else {
+                statusElement.textContent = "Érvénytelen QR-kód tartalom.";
+            }
+
+            // Leállítjuk az olvasót az új beolvasások előtt
+            await resetScanner();
+        };
+
+        const onScanError = (error) => {
+            console.error("QR kód hiba:", error);
+        };
+
+        scanBtn.addEventListener("click", async () => {
+            if (isScanning) {
+                // Leállítjuk az olvasót és visszaállítjuk az elemeket
                 await resetScanner();
-            };
-    
-            const onScanError = (error) => {
-                console.error("QR kód hiba:", error);
-            };
-    
-            scanBtn.addEventListener("click", async () => {
-                if (isScanning) {
-                    // Leállítjuk az olvasót és visszaállítjuk az elemeket
-                    await resetScanner();
-                    resetAudioPlayer();
-                } else {
-                    // QR olvasó indítása
-                    qrReaderContainer.style.display = "block";
-                    resetAudioPlayer();
-                    try {
-                        await qrReader.start(
-                            { facingMode: "environment" },
-                            { fps: 10, qrbox: { width: 250, height: 250 } },
-                            onScanSuccess,
-                            onScanError
-                        );
-                        statusElement.textContent = "A kamera elindult, keress QR-kódot!";
-                        isScanning = true;
-                        scanBtn.textContent = "Leállítás";
-                    } catch (err) {
-                        console.error("QR kód olvasó nem indítható:", err);
-                        statusElement.textContent = "Nem sikerült elindítani a QR kód olvasót.";
-                        qrReaderContainer.style.display = "none";
-                    }
+                resetAudioPlayer();
+            } else {
+                // QR olvasó indítása
+                qrReaderContainer.style.display = "block";
+                resetAudioPlayer();
+                try {
+                    await qrReader.start(
+                        { facingMode: "environment" },
+                        { fps: 10, qrbox: { width: 250, height: 250 } },
+                        onScanSuccess,
+                        onScanError
+                    );
+                    statusElement.textContent = "A kamera elindult, keress QR-kódot!";
+                    isScanning = true;
+                    scanBtn.textContent = "Leállítás";
+                } catch (err) {
+                    console.error("QR kód olvasó nem indítható:", err);
+                    statusElement.textContent = "Nem sikerült elindítani a QR kód olvasót.";
+                    qrReaderContainer.style.display = "none";
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
+
     
 
 </body>
