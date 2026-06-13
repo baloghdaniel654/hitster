@@ -170,21 +170,67 @@ audio {
 }
 
 .scan-icon {
-    width: 118px;
-    height: 118px;
+    position: relative;
+    width: 138px;
+    height: 138px;
     display: grid;
     place-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 32px;
-    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 38px;
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.2), transparent 36%),
+        rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 48px rgba(0, 0, 0, 0.24);
+    overflow: hidden;
 }
 
-.scan-icon span {
-    width: 58px;
-    height: 58px;
-    border: 4px solid #1db954;
-    border-radius: 18px;
-    box-shadow: inset 0 0 0 10px rgba(29, 185, 84, 0.13);
+.scan-icon::before,
+.scan-icon::after {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: inherit;
+    opacity: 0.42;
+    animation: symbol-aura 7.2s ease-in-out infinite;
+}
+
+.scan-icon::before {
+    border: 2px solid currentColor;
+    color: #1db954;
+    filter: blur(10px);
+}
+
+.scan-icon::after {
+    inset: 28px;
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    animation-delay: 2.4s;
+}
+
+@keyframes symbol-aura {
+    0%,
+    100% {
+        border-radius: 34px;
+        transform: rotate(0deg) scale(1);
+        opacity: 0.22;
+    }
+
+    28% {
+        border-radius: 50%;
+        transform: rotate(-90deg) scale(0.96);
+        opacity: 0.46;
+    }
+
+    58% {
+        border-radius: 18px;
+        transform: rotate(-180deg) scale(1.05);
+        opacity: 0.34;
+    }
+
+    78% {
+        border-radius: 34px;
+        transform: rotate(-270deg) scale(0.98);
+        opacity: 0.42;
+    }
 }
 
 .player-container {
@@ -221,28 +267,6 @@ audio {
 audio {
     width: 100%;
     accent-color: #1db954;
-}
-
-.status {
-    min-height: 48px;
-    margin: 0;
-    display: grid;
-    align-items: center;
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.07);
-    color: #c9d6e4;
-    line-height: 1.4;
-}
-
-.status.success {
-    color: #cbf7dc;
-    background: rgba(29, 185, 84, 0.16);
-}
-
-.status.error {
-    color: #ffd4d8;
-    background: rgba(255, 76, 97, 0.16);
 }
 
 .scan-button {

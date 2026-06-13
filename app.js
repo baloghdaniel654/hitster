@@ -2,19 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const qrReader = new Html5Qrcode("qr-reader");
     const scanBtn = document.getElementById("scan-btn");
     const scanBtnLabel = document.getElementById("scan-btn-label");
-    const statusElement = document.getElementById("status");
     const qrReaderContainer = document.getElementById("qr-reader");
     const idleState = document.getElementById("idle-state");
     const playerContainer = document.getElementById("player-container");
     const audioPlayer = document.getElementById("audio-player");
 
     let isScanning = false;
-
-    const setStatus = (message, type = "") => {
-        statusElement.textContent = message;
-        statusElement.className = `status${type ? ` ${type}` : ""}`;
-        statusElement.hidden = !message;
-    };
 
     const setScanningUi = (active) => {
         isScanning = active;
@@ -58,13 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 await audioPlayer.play();
                 playerContainer.hidden = false;
-                setStatus("", "success");
             } catch (err) {
                 console.error("Hiba a hangfájl lejátszása közben:", err);
-                setStatus("Nem sikerült a hangfájlt lejátszani.", "error");
             }
         } else {
-            setStatus("Érvénytelen QR-kód tartalom.", "error");
+            console.error("Érvénytelen QR-kód tartalom:", decodedText);
         }
 
         await resetScanner();
@@ -76,13 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isScanning) {
             await resetScanner();
             resetAudioPlayer();
-            setStatus("Nyomd meg a gombot a kamera indításához.");
             return;
         }
 
         resetAudioPlayer();
         setScanningUi(true);
-        setStatus("A kamera indul...");
 
         try {
             await qrReader.start(
@@ -91,11 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 onScanSuccess,
                 onScanError
             );
-            setStatus("A kamera elindult, keress QR-kódot!");
         } catch (err) {
             console.error("QR kód olvasó nem indítható:", err);
             setScanningUi(false);
-            setStatus("Nem sikerült elindítani a QR-kód olvasót.", "error");
         }
     });
 });
